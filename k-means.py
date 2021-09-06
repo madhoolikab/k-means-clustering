@@ -150,4 +150,24 @@ mean = inital_mean(K, 10)
 for i in range(10):
     labels, mean = l2_distance(feature_matrix, mean, K)
 
-labels = np.array(labels) 
+labels = np.array(labels)
+
+pca = PCA(n_components=2)
+         
+principalComponents = pca.fit_transform(np.transpose(feature_matrix))
+#PCs:50000 x 2
+
+fig = plt.figure()
+plt.xlabel('Principal Component 1', fontsize = 12)
+plt.ylabel('Principal Component 2', fontsize = 12)
+plt.title('K Means (K=10), DataPoints:50,000, PCA Visualization', fontsize = 12)
+
+targets = list(map(str, range(7)))
+colors = ['r', 'g', 'b','y','black', 'c', 'm']
+
+for target, color in zip(targets, colors):
+    print(target)
+    temp = np.where(labels == int(target))[0]
+    plt.scatter(principalComponents[temp,0], principalComponents[temp,1], c=color)
+    
+plt.legend(targets)
