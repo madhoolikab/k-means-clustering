@@ -60,3 +60,50 @@ cifar_10_dir = 'data\cifar-10-batches-py'
 
 train_data, train_filenames, train_labels, test_data, test_filenames, test_labels, label_names = load_cifar_10_data(cifar_10_dir)
 
+# Generating DataMatrix(Each data point is represented by a feature matrix)
+"Converting CIFAR 10 DATA SET INTO Grayscale"
+train_data_final = []
+for train_img in train_data:
+    train_data_final.append(cv2.cvtColor(train_img, cv2.COLOR_RGB2GRAY))
+
+test_data_final = []
+for test_img in test_data:
+    test_data_final.append(cv2.cvtColor(test_img, cv2.COLOR_RGB2GRAY))
+    
+image = train_data_final[0]
+  
+def bins_grayscale(image):
+    vec_image=image.flatten()
+    #bin 0-25
+    x1=len(np.where(vec_image<=25)[0])
+    #bin 25-50
+    x2=len(np.where(vec_image<=50)[0])-len(np.where(vec_image<=25)[0])
+    #bin 50-75
+    x3=len(np.where(vec_image<=75)[0])-len(np.where(vec_image<=50)[0])
+    #bin 75-100
+    x4=len(np.where(vec_image<=100)[0])-len(np.where(vec_image<=75)[0])
+    #bin 100-125
+    x5=len(np.where(vec_image<=125)[0])-len(np.where(vec_image<=100)[0])
+    #bin 125-150
+    x6=len(np.where(vec_image<=150)[0])-len(np.where(vec_image<=125)[0])
+    #bin 150-175
+    x7=len(np.where(vec_image<=175)[0])-len(np.where(vec_image<=150)[0])
+    #bin 175-200
+    x8=len(np.where(vec_image<=200)[0])-len(np.where(vec_image<=175)[0])
+    #bin 200-225
+    x9=len(np.where(vec_image<=225)[0])-len(np.where(vec_image<=200)[0])
+    #bin 225-255
+    x10=len(np.where(vec_image<=255)[0])-len(np.where(vec_image<=225)[0])
+    temp=[]
+    temp=[x1,x2,x3,x4,x5,x6,x7,x8,x9,x10]
+    temp=np.array(temp).reshape(1,10)
+    return temp
+
+# creating a data matrix (50000 * 10)
+feature_matrix=np.zeros((1,10))
+for i in train_data_final:
+    temp = bins_grayscale(i)
+    feature_matrix = np.vstack((feature_matrix,temp))
+    
+feature_matrix=feature_matrix[1:50001,:]
+feature_matrix=feature_matrix.transpose()
