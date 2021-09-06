@@ -107,3 +107,47 @@ for i in train_data_final:
     
 feature_matrix=feature_matrix[1:50001,:]
 feature_matrix=feature_matrix.transpose()
+
+# Standardize the data
+X_std = StandardScaler().fit_transform(feature_matrix)
+
+# Initializize Number of Clusters 
+K=10
+
+# Initialize random means
+def inital_mean(K, dimension):
+    mean={}
+    for i in range(K):
+        mean[i] = (np.random.rand(dimension)*2)
+        
+    return mean
+
+def updated_mean(feature_matrix, K, classes):
+    # feature matrix is (features) x (datapoints)
+    mean={}
+    temp=np.array(classes)
+    for i in range(K):
+        mean[i] = np.mean(feature_matrix[:, np.where(temp==i)[0]], 1)
+        
+    return mean
+
+def l2_distance(feature_matrix, mean, K1):
+    #feature matrix is (feature) x (datapoints)
+    classes = []
+    for i in range(feature_matrix.shape[1]):
+        temp = np.linalg.norm(mean[0] - feature_matrix[:, i])
+        temp1 = 0
+        for j in range(K1):
+            temp2 = np.linalg.norm(mean[j] - feature_matrix[:, i])
+            if temp2 < temp:
+                temp1 = j
+                temp = temp2
+        classes.append(temp1)
+    mean = updated_mean(feature_matrix, K1, classes)
+    return classes, mean
+
+mean = inital_mean(K, 10)
+for i in range(10):
+    labels, mean = l2_distance(feature_matrix, mean, K)
+
+labels = np.array(labels) 
